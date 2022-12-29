@@ -14,10 +14,20 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+
+
+console.log('env file', process.env.USER_NAME);
+
 async function run() {
   try {
     const postCollection = client.db("social-activitis").collection("posts");
     const aboutCollection = client.db("social-activitis").collection("about");
+    const commentCollection = client
+      .db("social-activitis")
+      .collection("comment");
+    const reactionCollection = client
+      .db("social-activitis")
+      .collection("reaction");
 
     app.get("/about", async (req, res) => {
       const query = {};
@@ -48,10 +58,9 @@ async function run() {
     app.post("/posts", async (req, res) => {
       const post = req.body;
       const result = await postCollection.insertOne(post);
-      console.log(result);
       res.send(result);
     });
-    //
+    // all post get
     app.get("/posts", async (req, res) => {
       const query = {};
       const result = await postCollection
@@ -68,21 +77,36 @@ async function run() {
       res.send(result);
     });
 
-    //
-    // app.get("/services/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const service = await servicesCollection.findOne(query);
-    //   res.send(service);
-    // });
+    //comment post
+    app.post("/comment", async (req, res) => {
+      const comment = req.body;
+      const result = await commentCollection.insertOne(comment);
+      res.send(result);
+    });
 
-    //all services
-    // app.get("/services", async (req, res) => {
-    //   const query = {};
-    //   const cursor = servicesCollection.find(query, {sort:{_id:-1}});
-    //   const services = await cursor.toArray();
-    //   res.send(services);
-    // });
+    //single comment
+    app.get("/comments/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { postId: id };
+      const comments = await commentCollection.find(query).toArray();
+      res.send(comments);
+    });
+
+    //comment post
+    app.post("/reaction", async (req, res) => {
+      const reaction = req.body;
+      console.log(reaction);
+      const result = await reactionCollection.insertOne(reaction);
+      res.send(result);
+    });
+
+    //single comment
+    app.get("/reaction/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { postId: id };
+      const reaction = await reactionCollection.find(query).toArray();
+      res.send(reaction);
+    });
   } finally {
   }
 }
