@@ -17,6 +17,32 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const postCollection = client.db("social-activitis").collection("posts");
+    const aboutCollection = client.db("social-activitis").collection("about");
+
+    app.get("/about", async (req, res) => {
+      const query = {};
+      const result = await aboutCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //update about info
+    app.put("/about/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const info = req.body;
+      console.log(info);
+      const option = { upsert: true };
+      const updateDoc = {
+        $set: {
+          name: info.name,
+          email: info.email,
+          university: info.university,
+          address: info.address,
+        },
+      };
+      const result = await aboutCollection.updateOne(filter, updateDoc, option);
+      res.send(result);
+    });
 
     //send post in db
     app.post("/posts", async (req, res) => {
@@ -29,18 +55,18 @@ async function run() {
     app.get("/posts", async (req, res) => {
       const query = {};
       const result = await postCollection
-        .find(query, {sort:{_id:-1}})
+        .find(query, { sort: { _id: -1 } })
         .toArray();
       res.send(result);
     });
 
     //single post for service details com
-    app.get('/posts/:id', async(req, res) => {
+    app.get("/posts/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: ObjectId(id)};
+      const query = { _id: ObjectId(id) };
       const result = await postCollection.findOne(query);
-      res.send(result)
-    })
+      res.send(result);
+    });
 
     //
     // app.get("/services/:id", async (req, res) => {
