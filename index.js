@@ -102,12 +102,21 @@ async function run() {
       const reaction = await reactionCollection.find(query).toArray();
       res.send(reaction);
     });
+
+    //top react post data
+    app.get("/reaction", async (req, res) => {
+      const query = {};
+      const result = await reactionCollection.find(query).toArray();
+      res.send(result);
+    });
+
+
+
   } finally {
   }
 }
 run().catch((error) => console.log(error));
 
-console.log(uri);
 
 app.get("/", (req, res) => {
   res.send("Social activity database");
@@ -116,5 +125,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`social activity database running ${port}`);
 });
-
-  
