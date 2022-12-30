@@ -14,10 +14,6 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
-
-
-console.log('env file', process.env.USER_NAME);
-
 async function run() {
   try {
     const postCollection = client.db("social-activitis").collection("posts");
@@ -95,7 +91,6 @@ async function run() {
     //comment post
     app.post("/reaction", async (req, res) => {
       const reaction = req.body;
-      console.log(reaction);
       const result = await reactionCollection.insertOne(reaction);
       res.send(result);
     });
@@ -122,14 +117,4 @@ app.listen(port, () => {
   console.log(`social activity database running ${port}`);
 });
 
-// const allPost = require("./data/posts.json");
-
-// app.get("/posts", (req, res) => {
-//   res.send(allPost);
-// });
-
-// app.get("/post-details/:id", (req, res) => {
-//   const id = req.params.id;
-//   const result = allPost.find((post) => post.id == id);
-//   res.send(result);
-// });
+  
